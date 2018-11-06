@@ -37,28 +37,45 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        findViewById<Button>(R.id.decrypt_button).setOnClickListener { performDecryption() }
+        refreshButtonLabelAndAction()
+    }
 
+    private fun refreshButtonLabelAndAction() {
+        if (!hasCreatedKey(this)) {
+            findViewById<Button>(R.id.decrypt_button).text = "Click to generate key and save encrypted data"
+            findViewById<Button>(R.id.decrypt_button).setOnClickListener { performEncryption() }
+        } else {
+            findViewById<Button>(R.id.decrypt_button).text = "Click to decrypt"
+            findViewById<Button>(R.id.decrypt_button).setOnClickListener { performDecryption() }
+        }
+    }
+
+    @RequiresApi(23)
+    private fun performEncryption() {
+        if (!keyguardManager.isDeviceSecure) {
+            // Even biometrics count
+            showMessage("Device is not secure with a PIN/Pattern/Password/Biometrics")
+            return
+        }
+//            showMessage("Device is secure with a PIN/Pattern/Password/Biometrics")
+//            showMessage("First time, creating the key")
+        createKey(keyName)
+        setHasCreatedKey(this, true)
+        val encryptedData = encrypt(keyName, plainTextMessage)
+        saveData(this, encryptedDataFilename, encryptedData)
+        refreshButtonLabelAndAction()
     }
 
     @RequiresApi(23)
     private fun performDecryption() {
         if (!keyguardManager.isDeviceSecure) {
-            // Even biometrics count
+            // Even biometrics counts
             showMessage("Device is not secure with a PIN/Pattern/Password/Biometrics")
         } else {
 //            showMessage("Device is secure with a PIN/Pattern/Password/Biometrics")
-            if (!hasCreatedKey(this)) {
-//                showMessage("First time, creating the key")
-                createKey(keyName)
-                setHasCreatedKey(this, true)
-                val encryptedData = encrypt(keyName, plainTextMessage)
-                saveData(this, encryptedDataFilename, encryptedData)
-            } else {
-                showMessage("Key already exists, decrypting data")
-                val decryptedData = decrypt(keyName, readData(this, encryptedDataFilename))
-                findViewById<TextView>(R.id.text_view).text = decryptedData
-            }
+            showMessage("Key exists, decrypting data")
+            val decryptedData = decrypt(keyName, readData(this, encryptedDataFilename))
+            findViewById<TextView>(R.id.text_view).text = decryptedData
         }
     }
 
@@ -115,6 +132,7 @@ class MainActivity : AppCompatActivity() {
                 showMessage("You authenticated successfully")
                 val encryptedData = encrypt(keyName, plainTextMessage)
                 saveData(this, encryptedDataFilename, encryptedData)
+                refreshButtonLabelAndAction()
             } else {
                 // The user canceled or didn’t complete the lock screen
                 // operation. Go to error/cancellation flow.
