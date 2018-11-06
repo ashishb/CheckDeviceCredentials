@@ -6,3 +6,6 @@ A small proof-of-concept Kotlin-based app which demonstrates how an app can forc
 
 `./gradlew assembleDebug`
 
+## Demo
+
+Try out the [demo](https://appetize.io/app/xjegxquxewkkvcne2h7fmegbar?device=nexus5&scale=75&orientation=portrait&osVersion=7.1)
