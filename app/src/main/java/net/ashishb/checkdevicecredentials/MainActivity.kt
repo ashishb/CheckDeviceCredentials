@@ -2,13 +2,16 @@ package net.ashishb.checkdevicecredentials
 
 import android.app.Activity
 import android.app.KeyguardManager
+import android.app.admin.DevicePolicyManager
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.security.keystore.UserNotAuthenticatedException
 import android.support.annotation.RequiresApi
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.Button
@@ -54,7 +57,13 @@ class MainActivity : AppCompatActivity() {
     private fun performEncryption() {
         if (!keyguardManager.isDeviceSecure) {
             // Even biometrics count
-            showMessage("Device is not secure with a PIN/Pattern/Password/Biometrics")
+            showPrompt(this,
+                "First secure device with a " +
+                        "PIN/Pattern/Password/Biometrics by going to" +
+                        " System settings -> Security",
+                "Go to Security Settings",
+                Intent(DevicePolicyManager.ACTION_SET_NEW_PASSWORD))
+            startActivity(intent);
             return
         }
 //            showMessage("Device is secure with a PIN/Pattern/Password/Biometrics")
@@ -70,9 +79,13 @@ class MainActivity : AppCompatActivity() {
     private fun performDecryption() {
         if (!keyguardManager.isDeviceSecure) {
             // Even biometrics counts
-            showMessage("First secure device with a " +
-                    "PIN/Pattern/Password/Biometrics by going to" +
-                    " System settings -> Security")
+            showPrompt(this,
+                "First secure device with a " +
+                        "PIN/Pattern/Password/Biometrics by going to" +
+                    " System settings -> Security",
+                "Go to Security Settings",
+                Intent(DevicePolicyManager.ACTION_SET_NEW_PASSWORD))
+            startActivity(intent);
         } else {
 //            showMessage("Device is secure with a PIN/Pattern/Password/Biometrics")
             showMessage("Key exists, decrypting data")
@@ -184,4 +197,15 @@ class MainActivity : AppCompatActivity() {
 fun showMessage(context: Context, msg: String) {
     Log.d("MainActivity", msg)
     Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+}
+
+fun showPrompt(context: Context, msg: String, buttonLabel: String, intent: Intent) {
+    AlertDialog.Builder(context)
+        .setMessage(msg)
+        .setPositiveButton(buttonLabel) { dialog, _ ->
+            run {
+                context.startActivity(intent)
+                dialog.dismiss()
+            }
+        }.show()
 }

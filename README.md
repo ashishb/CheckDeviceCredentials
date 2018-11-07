@@ -8,4 +8,4 @@ A small proof-of-concept Kotlin-based app which demonstrates how an app can forc
 
 ## Demo
 
-Try out the [demo](https://appetize.io/app/xjegxquxewkkvcne2h7fmegbar?device=nexus5&scale=75&orientation=portrait&osVersion=7.1)
+Try out the [demo](https://appetize.io/app/52dqm6ebrfv17v5cv5qkx3kvm4?device=nexus5&scale=75&orientation=portrait&osVersion=7.1)
