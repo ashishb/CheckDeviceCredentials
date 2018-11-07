@@ -70,7 +70,9 @@ class MainActivity : AppCompatActivity() {
     private fun performDecryption() {
         if (!keyguardManager.isDeviceSecure) {
             // Even biometrics counts
-            showMessage("Device is not secure with a PIN/Pattern/Password/Biometrics")
+            showMessage("First secure device with a " +
+                    "PIN/Pattern/Password/Biometrics by going to" +
+                    " System settings -> Security")
         } else {
 //            showMessage("Device is secure with a PIN/Pattern/Password/Biometrics")
             showMessage("Key exists, decrypting data")
